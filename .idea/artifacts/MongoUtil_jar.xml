@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="MongoUtil:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/MongoUtil</output-path>
+    <root id="archive" name="MongoUtil.jar">
+      <element id="module-output" name="MongoUtil" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/google/code/gson/gson/2.8.1/gson-2.8.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/mongodb/mongo-java-driver/3.4.2/mongo-java-driver-3.4.2.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
