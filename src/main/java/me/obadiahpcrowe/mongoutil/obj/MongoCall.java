@@ -20,7 +20,7 @@ public class MongoCall {
     private MongoDB database;
     private CallType callType;
     private Map<String, Object> identifiers;
-    private Map<Class, TypeAdapter> adapters;
+    private Map<Class, Object> adapters;
     private Object insertableObject;
     private String updateField;
     private Class returnableObject;
@@ -30,7 +30,7 @@ public class MongoCall {
         this.database = database;
     }
 
-    public MongoCall setAdapters(Map<Class, TypeAdapter> adapters) {
+    public MongoCall setAdapters(Map<Class, Object> adapters) {
         this.adapters = adapters;
         return this;
     }

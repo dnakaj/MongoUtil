@@ -69,7 +69,7 @@ public class MongoManager {
     }
 
     private Object getObject(DBCollection collection, Map<String, Object> identifiers, Class returnableObject) { return getObject(collection, identifiers, returnableObject, null); }
-    private Object getObject(DBCollection collection, Map<String, Object> identifiers, Class returnableObject, Map<Class, TypeAdapter> adapters) {
+    private Object getObject(DBCollection collection, Map<String, Object> identifiers, Class returnableObject, Map<Class, Object> adapters) {
         BasicDBObject query = new BasicDBObject();
         Gson gson = setAdapters(adapters);
 
@@ -100,7 +100,7 @@ public class MongoManager {
         }
     }
     private void insertObject(DBCollection collection, Object insertableObject) { insertObject(collection, insertableObject, null); }
-    private void insertObject(DBCollection collection, Object insertableObject, Map<Class, TypeAdapter> adapters) {
+    private void insertObject(DBCollection collection, Object insertableObject, Map<Class, Object> adapters) {
         Gson gson = setAdapters(adapters);
         BasicDBObject query = BasicDBObject.parse(gson.toJson(insertableObject));
 
@@ -121,7 +121,7 @@ public class MongoManager {
     private void updateObject(DBCollection collection, Map<String, Object> identifiers, String updateField,
                               Object insertableObject) { updateObject(collection, identifiers, updateField, insertableObject, null); }
     private void updateObject(DBCollection collection, Map<String, Object> identifiers, String updateField,
-                              Object insertableObject, Map<Class, TypeAdapter> adapters) {
+                              Object insertableObject, Map<Class, Object> adapters) {
         Gson gson = setAdapters(adapters);
         BasicDBObject object = new BasicDBObject();
         object.append("$set", new BasicDBObject().append(updateField, gson.toJson(insertableObject)));
@@ -136,11 +136,11 @@ public class MongoManager {
         collection.update(query, object);
     }
 
-    private Gson setAdapters(Map<Class, TypeAdapter> adapters) {
+    private Gson setAdapters(Map<Class, Object> adapters) {
         Gson gson = this.gson;
         if (adapters != null) {
             GsonBuilder gsonBuilder = new GsonBuilder();
-            for (Map.Entry<Class, TypeAdapter> entrySet : adapters.entrySet()) {
+            for (Map.Entry<Class, Object> entrySet : adapters.entrySet()) {
                 gsonBuilder.registerTypeAdapter(entrySet.getKey(), entrySet.getValue());
             }
             gson = gsonBuilder.create();
