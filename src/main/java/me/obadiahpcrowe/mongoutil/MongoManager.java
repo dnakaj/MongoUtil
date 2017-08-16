@@ -1,6 +1,8 @@
 package me.obadiahpcrowe.mongoutil;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.TypeAdapter;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -66,8 +68,18 @@ public class MongoManager {
         return returnableObject;
     }
 
-    private Object getObject(DBCollection collection, Map<String, Object> identifiers, Class returnableObject) {
+    private Object getObject(DBCollection collection, Map<String, Object> identifiers, Class returnableObject) { return getObject(collection, identifiers, returnableObject, null); }
+    private Object getObject(DBCollection collection, Map<String, Object> identifiers, Class returnableObject, Map<Class, TypeAdapter> adapters) {
         BasicDBObject query = new BasicDBObject();
+        Gson gson = this.gson;
+        if (adapters != null) {
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            for (Map.Entry<Class, TypeAdapter> entrySet : adapters.entrySet()) {
+                gsonBuilder.registerTypeAdapter(entrySet.getKey(), entrySet.getValue());
+            }
+            gson = gsonBuilder.create();
+        }
+
         if (identifiers.size() <= 0) {
             DBCursor cursor = collection.find();
             List<Object> objects = new ArrayList<>();
@@ -94,8 +106,17 @@ public class MongoManager {
             return null;
         }
     }
+    private void insertObject(DBCollection collection, Object insertableObject) { insertObject(collection, insertableObject, null); }
+    private void insertObject(DBCollection collection, Object insertableObject, Map<Class, TypeAdapter> adapters) {
+        Gson gson = this.gson;
+        if (adapters != null) {;
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            for (Map.Entry<Class, TypeAdapter> entrySet : adapters.entrySet()) {
+                gsonBuilder.registerTypeAdapter(entrySet.getKey(), entrySet.getValue());
+            }
+            gson = gsonBuilder.create();
+        }
 
-    private void insertObject(DBCollection collection, Object insertableObject) {
         BasicDBObject query = BasicDBObject.parse(gson.toJson(insertableObject));
         collection.insert(query);
     }

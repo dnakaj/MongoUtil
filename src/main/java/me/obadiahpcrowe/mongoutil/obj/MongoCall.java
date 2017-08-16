@@ -1,5 +1,6 @@
 package me.obadiahpcrowe.mongoutil.obj;
 
+import com.google.gson.TypeAdapter;
 import lombok.Getter;
 import me.obadiahpcrowe.mongoutil.enums.CallType;
 
@@ -19,6 +20,7 @@ public class MongoCall {
     private MongoDB database;
     private CallType callType;
     private Map<String, Object> identifiers;
+    private Map<Class, TypeAdapter> adapters;
     private Object insertableObject;
     private String updateField;
     private Class returnableObject;
@@ -26,6 +28,11 @@ public class MongoCall {
     public MongoCall(String dbName, MongoDB database) {
         this.dbName = dbName;
         this.database = database;
+    }
+
+    public MongoCall setAdapters(Map<Class, TypeAdapter> adapters) {
+        this.adapters = adapters;
+        return this;
     }
 
     public MongoCall get(Map<String, Object> identifiers, Class returnableObject) {
@@ -60,5 +67,9 @@ public class MongoCall {
         this.identifiers = identifiers;
         this.insertableObject = insertableObject;
         return this;
+    }
+
+    public MongoDB getDatabase() {
+        return this.database;
     }
 }
