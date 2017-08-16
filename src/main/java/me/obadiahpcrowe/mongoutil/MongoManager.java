@@ -51,10 +51,10 @@ public class MongoManager {
 
         switch (mongoCall.getCallType()) {
             case GET:
-                returnableObject = getObject(collection, mongoCall.getIdentifiers(), mongoCall.getReturnableObject());
+                returnableObject = getObject(collection, mongoCall.getIdentifiers(), mongoCall.getReturnableObject(), mongoCall.getAdapters());
                 break;
             case INSERT:
-                insertObject(collection, mongoCall.getInsertableObject());
+                insertObject(collection, mongoCall.getInsertableObject(), mongoCall.getAdapters());
                 break;
             case REMOVE:
                 deleteObject(collection, mongoCall.getIdentifiers());
