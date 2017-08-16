@@ -71,14 +71,7 @@ public class MongoManager {
     private Object getObject(DBCollection collection, Map<String, Object> identifiers, Class returnableObject) { return getObject(collection, identifiers, returnableObject, null); }
     private Object getObject(DBCollection collection, Map<String, Object> identifiers, Class returnableObject, Map<Class, TypeAdapter> adapters) {
         BasicDBObject query = new BasicDBObject();
-        Gson gson = this.gson;
-        if (adapters != null) {
-            GsonBuilder gsonBuilder = new GsonBuilder();
-            for (Map.Entry<Class, TypeAdapter> entrySet : adapters.entrySet()) {
-                gsonBuilder.registerTypeAdapter(entrySet.getKey(), entrySet.getValue());
-            }
-            gson = gsonBuilder.create();
-        }
+        Gson gson = setAdapters(adapters);
 
         if (identifiers.size() <= 0) {
             DBCursor cursor = collection.find();
@@ -108,16 +101,9 @@ public class MongoManager {
     }
     private void insertObject(DBCollection collection, Object insertableObject) { insertObject(collection, insertableObject, null); }
     private void insertObject(DBCollection collection, Object insertableObject, Map<Class, TypeAdapter> adapters) {
-        Gson gson = this.gson;
-        if (adapters != null) {;
-            GsonBuilder gsonBuilder = new GsonBuilder();
-            for (Map.Entry<Class, TypeAdapter> entrySet : adapters.entrySet()) {
-                gsonBuilder.registerTypeAdapter(entrySet.getKey(), entrySet.getValue());
-            }
-            gson = gsonBuilder.create();
-        }
-
+        Gson gson = setAdapters(adapters);
         BasicDBObject query = BasicDBObject.parse(gson.toJson(insertableObject));
+
         collection.insert(query);
     }
 
@@ -133,9 +119,12 @@ public class MongoManager {
     }
 
     private void updateObject(DBCollection collection, Map<String, Object> identifiers, String updateField,
-                              Object insertableObject) {
+                              Object insertableObject) { updateObject(collection, identifiers, updateField, insertableObject, null); }
+    private void updateObject(DBCollection collection, Map<String, Object> identifiers, String updateField,
+                              Object insertableObject, Map<Class, TypeAdapter> adapters) {
+        Gson gson = setAdapters(adapters);
         BasicDBObject object = new BasicDBObject();
-        object.append("$set", new BasicDBObject().append(updateField, insertableObject));
+        object.append("$set", new BasicDBObject().append(updateField, gson.toJson(insertableObject)));
         BasicDBObject query = new BasicDBObject();
         Iterator itr = identifiers.entrySet().iterator();
 
@@ -145,6 +134,18 @@ public class MongoManager {
         }
 
         collection.update(query, object);
+    }
+
+    private Gson setAdapters(Map<Class, TypeAdapter> adapters) {
+        Gson gson = this.gson;
+        if (adapters != null) {
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            for (Map.Entry<Class, TypeAdapter> entrySet : adapters.entrySet()) {
+                gsonBuilder.registerTypeAdapter(entrySet.getKey(), entrySet.getValue());
+            }
+            gson = gsonBuilder.create();
+        }
+        return gson;
     }
 
     public static MongoManager getInstance() {
